@@ -81,10 +81,17 @@ export function provideLenis(options = {}) {
     scrollProgress.value = instance.limit > 0 ? instance.scroll / instance.limit : 0
     updateActiveSection()
 
+    let isScrollTicking = false
     unsubscribeScroll = instance.on('scroll', ({ scroll, progress }) => {
       scrollY.value = scroll
       scrollProgress.value = progress
-      updateActiveSection()
+      if (!isScrollTicking) {
+        isScrollTicking = true
+        requestAnimationFrame(() => {
+          updateActiveSection()
+          isScrollTicking = false
+        })
+      }
     })
 
     await nextTick()
