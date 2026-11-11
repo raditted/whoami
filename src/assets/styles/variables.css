@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light dark;
+
+  --font-display: "Sora", "Nunito Sans", system-ui, sans-serif;
+  --font-sans: "Nunito Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Claude.ai warm palette: 3 core neutrals + 1 terracotta accent, WCAG AA verified */
+  --color-bg: light-dark(#FAF8F3, #141413);
+  --color-bg-band: light-dark(rgba(244, 240, 232, 0.72), rgba(26, 25, 23, 0.78));
+  --color-surface: light-dark(rgba(255, 255, 255, 0.94), rgba(30, 29, 27, 0.94));
+  --color-header-bg: light-dark(rgba(250, 248, 243, 0.88), rgba(20, 20, 19, 0.88));
+
+  --color-ink: light-dark(#1F1E1A, #ECE8DF);
+  --color-ink-secondary: light-dark(#47443B, #C4BEB3);
+  --color-ink-muted: light-dark(#545045, #AEA89C);
+
+  --color-border: light-dark(#8A8374, #6E6A61);
+  --color-border-subtle: light-dark(#DDD6C7, #2E2C28);
+
+  --color-accent: light-dark(#A84323, #EE8664);
+  --color-accent-bg: light-dark(#B54927, #D97757);
+  --color-accent-ink: light-dark(#FFFFFF, #141413);
+  --color-accent-hover: light-dark(#98391B, #EE8664);
+
+  --btn-border-primary: light-dark(#6E240D, #F29A7C);
+  --btn-ledge-primary: light-dark(#6E240D, #8A3F26);
+  --btn-border-secondary: light-dark(#7A7364, #59554D);
+  --btn-ledge-secondary: light-dark(#9E9687, #383530);
+
+  --shadow-overlay: 0 12px 32px rgba(20, 20, 19, 0.24);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --container-max: 1100px;
+  --header-height: 68px;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="dark"]) {
+  color-scheme: dark;
+}
+
+:root:has(> head > meta[name="color-scheme"][content="light"]) {
+  color-scheme: light;
+}

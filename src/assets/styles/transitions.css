@@ -1,0 +1,18 @@
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fadeIn {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.45s ease-out, transform 0.35s ease-out;
+  }
+
+  .fadeIn.onScreen {
+    opacity: 1;
+    transform: none;
+  }
+}

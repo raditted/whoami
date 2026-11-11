@@ -1,0 +1,266 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1.025rem;
+  line-height: 1.65;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-size-adjust: from-font;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-accent);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* Pointer cursor base layer for enabled interactive controls */
+a[href],
+button,
+summary,
+select,
+label[for],
+label:has(> input[type="checkbox"], > input[type="radio"]),
+[role="button"],
+[role="link"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+[role="switch"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="range"],
+input[type="color"] {
+  cursor: pointer;
+}
+
+:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+:where(a:any-link, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 200;
+  padding: 0.65rem 1rem;
+  background-color: var(--color-accent-bg);
+  color: var(--color-accent-ink);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.visually-hidden:where(:not(:focus-within, :active)) {
+  position: absolute !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+.container {
+  width: min(100% - 2rem, var(--container-max));
+  margin-inline: auto;
+}
+
+.section-band {
+  background-color: var(--color-bg-band);
+  border-block: 1px solid var(--color-border-subtle);
+}
+
+.section-padding {
+  padding-block: clamp(3.5rem, 6vw, 5.5rem);
+}
+
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.2vw, 2.4rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Tactile keycap button system shared across hero CTAs, utilities, and steppers */
+.btn-key {
+  --_btn-ledge: 3px;
+  --_btn-ledge-color: var(--btn-ledge-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.55rem 1.25rem;
+  border-radius: 10px;
+  border: 2px solid var(--btn-border-secondary);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 var(--_btn-ledge) 0 var(--_btn-ledge-color);
+}
+
+.btn-key--primary {
+  background-color: var(--color-accent-bg);
+  color: var(--color-accent-ink);
+  border-color: var(--btn-border-primary);
+  --_btn-ledge-color: var(--btn-ledge-primary);
+}
+
+.btn-key--compact {
+  --_btn-ledge: 2px;
+  padding: 0.4rem 0.85rem;
+  border-width: 1.5px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-key,
+  .action-link-row,
+  .action-link-row .action-arrow {
+    transition: transform 110ms ease-out, box-shadow 110ms ease-out, border-color 150ms ease, color 150ms ease;
+  }
+}
+
+@media (hover: hover) {
+  .btn-key:hover:not(:disabled, [aria-disabled="true"]) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 calc(var(--_btn-ledge) + 1px) 0 var(--_btn-ledge-color);
+  }
+
+  .btn-key--primary:hover:not(:disabled, [aria-disabled="true"]) {
+    background-color: var(--color-accent-hover);
+    border-color: var(--btn-border-primary);
+    color: var(--color-accent-ink);
+  }
+}
+
+.btn-key:active:not(:disabled, [aria-disabled="true"]) {
+  transform: translateY(var(--_btn-ledge));
+  box-shadow: 0 0 0 var(--_btn-ledge-color);
+}
+
+.btn-key:disabled,
+.btn-key[aria-disabled="true"] {
+  transform: translateY(1px);
+  box-shadow: none;
+  opacity: 0.45;
+}
+
+@media (forced-colors: active) {
+  .btn-key {
+    box-shadow: none;
+    border-color: ButtonText;
+  }
+
+  .btn-key--primary {
+    background-color: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}
+
+/* Flush editorial card footer link to avoid repetitive boxes inside cards */
+.action-link-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.25rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.action-link-row .action-arrow {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .action-link-row:hover {
+    color: var(--color-accent);
+  }
+
+  .action-link-row:hover .action-arrow {
+    transform: translateX(3px);
+  }
+}
+
+@media (min-width: 640px) {
+  .container {
+    width: min(100% - 3rem, var(--container-max));
+  }
+}
