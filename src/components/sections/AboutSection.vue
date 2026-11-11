@@ -34,7 +34,18 @@ function jumpToPillar(index) {
   }
 }
 
-useLenisScroll(syncActivePillar)
+let isPillarTicking = false
+function handleScroll() {
+  if (!isPillarTicking) {
+    isPillarTicking = true
+    requestAnimationFrame(() => {
+      syncActivePillar()
+      isPillarTicking = false
+    })
+  }
+}
+
+useLenisScroll(handleScroll)
 
 onMounted(() => {
   syncActivePillar()
