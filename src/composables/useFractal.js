@@ -238,24 +238,40 @@ export function useFractal(canvasRef, resolvedTheme, isPaused) {
       }
 
       const resize = () => {
-        const dpr = window.devicePixelRatio || 1
-        canvas.width = Math.max(1, canvas.clientWidth * dpr)
-        canvas.height = Math.max(1, canvas.clientHeight * dpr)
+        const rawDpr = window.devicePixelRatio || 1
+        const isMobileScreen = window.innerWidth <= 768
+        // On mobile, clamping DPR to max 0.85 reduces fragment shader work by >80%
+        // while CSS upscaling keeps the organic background contour beautifully smooth.
+        // On desktop, clamp to 1.25 to prevent wasteful 4K GPU fill-rate exhaustion.
+        const dpr = isMobileScreen ? Math.min(rawDpr, 0.85) : Math.min(rawDpr, 1.25)
+        canvas.width = Math.max(1, Math.floor(canvas.clientWidth * dpr))
+        canvas.height = Math.max(1, Math.floor(canvas.clientHeight * dpr))
         gl.viewport(0, 0, canvas.width, canvas.height)
         setView()
         drawAt(elapsedSeconds)
       }
 
+      let lastDrawTime = 0
+
       const tick = (now) => {
-        if (isPaused.value) {
+        if (isPaused.value || document.hidden) {
           rafId = null
           lastFrameTime = null
           return
         }
+
+        const isMobileScreen = window.innerWidth <= 768
+        const minFrameInterval = isMobileScreen ? 30 : 0
+        if (minFrameInterval > 0 && now - lastDrawTime < minFrameInterval) {
+          rafId = requestAnimationFrame(tick)
+          return
+        }
+
         if (lastFrameTime !== null) {
           elapsedSeconds += (now - lastFrameTime) / 1000
         }
         lastFrameTime = now
+        lastDrawTime = now
         drawAt(elapsedSeconds)
         rafId = requestAnimationFrame(tick)
       }
@@ -274,8 +290,17 @@ export function useFractal(canvasRef, resolvedTheme, isPaused) {
         lastFrameTime = null
       }
 
+      const handleVisibilityChange = () => {
+        if (document.hidden) {
+          stopLoop()
+        } else if (!isPaused.value) {
+          startLoop()
+        }
+      }
+
       applyPalette(resolvedTheme.value)
       window.addEventListener('resize', resize)
+      document.addEventListener('visibilitychange', handleVisibilityChange)
       resize()
 
       const stopThemeWatch = watch(resolvedTheme, (mode) => {
@@ -304,6 +329,7 @@ export function useFractal(canvasRef, resolvedTheme, isPaused) {
         stopThemeWatch()
         stopPauseWatch()
         window.removeEventListener('resize', resize)
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
         if (buffer) gl.deleteBuffer(buffer)
         if (program) gl.deleteProgram(program)
         if (vertexShader) gl.deleteShader(vertexShader)
