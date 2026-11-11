@@ -298,6 +298,7 @@ watch(
   display: inline-block;
   white-space: pre-wrap;
   cursor: default;
+  vertical-align: baseline;
 }
 
 .decrypted-chars-wrap {
