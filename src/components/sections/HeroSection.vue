@@ -180,8 +180,9 @@ const profileJson = computed(() =>
 .hero-title {
   font-size: clamp(2.25rem, 5.4vw, 3.75rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--color-ink);
+  text-wrap: balance;
 }
 
 .hero-greeting-line {
@@ -194,18 +195,29 @@ const profileJson = computed(() =>
   display: block;
   margin-top: 0.15rem;
   color: var(--color-ink);
+  line-height: 1.15;
 }
 
 .hero-decrypted-name {
   color: var(--color-ink);
   font-family: inherit;
   font-weight: inherit;
+  font-size-adjust: from-font;
 }
 
 :deep(.hero-cipher-char) {
   color: var(--color-accent);
   font-family: var(--font-mono);
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 0.88em;
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+@supports not (font-size-adjust: from-font) {
+  .hero-decrypted-name {
+    line-height: 1.15;
+  }
 }
 
 .hero-fullname {
