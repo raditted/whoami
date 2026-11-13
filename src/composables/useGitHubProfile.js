@@ -212,18 +212,7 @@ export function provideGitHubProfile(username = 'raditted') {
         return
       }
 
-      // If REST API hits unauthenticated rate limit or server error, use stale API cache or live raw Markdown.
-      const stale = readCache(cacheKey, STALE_TTL_MS)
-      if (stale?.readmeHtml?.trim()) {
-        ghUser.value = stale.user ?? nextUser
-        userStatus.value = 'cache'
-        readmeHtml.value = stale.readmeHtml
-        readmeStatus.value = 'ready'
-        readmeSource.value = 'cache'
-        lastSyncedAt.value = stale.fetchedAt
-        return
-      }
-
+      // If REST API hits unauthenticated rate limit or server error, fetch live raw Markdown fallback.
       const rawFallback = await fetchRawReadmeFallback(username, controller.signal)
       if (controller.signal.aborted) return
 
@@ -233,6 +222,13 @@ export function provideGitHubProfile(username = 'raditted') {
         readmeStatus.value = 'ready'
         readmeSource.value = 'raw'
         lastSyncedAt.value = now
+
+        writeCache(cacheKey, {
+          fetchedAt: now,
+          source: 'raw',
+          user: nextUser,
+          readmeHtml: rawFallback.html
+        })
         return
       }
 
@@ -240,6 +236,18 @@ export function provideGitHubProfile(username = 'raditted') {
         readmeHtml.value = ''
         readmeStatus.value = 'empty'
         readmeSource.value = 'raw'
+        return
+      }
+
+      // If both REST API and raw fallback fail (e.g. offline), fallback to stale cache.
+      const stale = readCache(cacheKey, STALE_TTL_MS)
+      if (stale?.readmeHtml?.trim()) {
+        ghUser.value = stale.user ?? nextUser
+        userStatus.value = 'cache'
+        readmeHtml.value = stale.readmeHtml
+        readmeStatus.value = 'ready'
+        readmeSource.value = 'cache'
+        lastSyncedAt.value = stale.fetchedAt
         return
       }
 
