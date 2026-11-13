@@ -545,17 +545,23 @@ progress.loading-spinner:indeterminate {
 
 .gh-readme-body :deep(pre) {
   margin-block: 1rem;
-  padding: 1rem;
+  padding: 1rem 1.15rem;
   background-color: var(--color-bg-band);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-subtle) transparent;
 }
 
 .gh-readme-body :deep(pre code) {
   padding: 0;
   border: 0;
   background: transparent;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  tab-size: 2;
+  -moz-tab-size: 2;
 }
 
 .gh-readme-body :deep(blockquote) {
@@ -623,5 +629,46 @@ progress.loading-spinner:indeterminate {
   background-color: var(--color-bg-band);
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-sm);
+}
+
+@media (max-width: 640px) {
+  .gh-readme-stage {
+    padding: clamp(0.75rem, 3.2vw, 1.15rem);
+  }
+
+  .gh-readme-body {
+    font-size: 0.92rem;
+  }
+
+  .gh-readme-body :deep(h1) {
+    font-size: 1.35rem;
+  }
+
+  .gh-readme-body :deep(h2) {
+    font-size: 1.18rem;
+  }
+
+  .gh-readme-body :deep(h3) {
+    font-size: 1.02rem;
+    margin-top: 1.15rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .gh-readme-body :deep(h3 code) {
+    font-size: 0.85em;
+    padding: 0.14rem 0.4rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .gh-readme-body :deep(pre) {
+    margin-block: 0.65rem 0.9rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .gh-readme-body :deep(pre code) {
+    font-size: clamp(0.7rem, 3.1vw, 0.75rem);
+    line-height: 1.5;
+  }
 }
 </style>
