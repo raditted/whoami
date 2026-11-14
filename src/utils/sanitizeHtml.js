@@ -31,6 +31,8 @@ const ALLOWED_ELEMENTS = [
   'tr',
   'th',
   'td',
+  'center',
+  'markdown-accessiblity-table',
   'details',
   'summary',
   'span',
@@ -63,6 +65,29 @@ function loadDOMPurify() {
   return domPurifyPromise
 }
 
+const FORBID_TAGS = [
+  'script',
+  'style',
+  'iframe',
+  'object',
+  'embed',
+  'svg',
+  'math',
+  'noscript',
+  'template',
+  'textarea',
+  'title',
+  'xmp',
+  'noembed',
+  'noframes',
+  'plaintext',
+  'form',
+  'input',
+  'select',
+  'option',
+  'button'
+]
+
 /**
  * Safely parse and insert untrusted HTML into an element using native
  * Element.setHTML() when available, falling back to DOMPurify.
@@ -81,12 +106,16 @@ export async function safeSetHTML(el, html) {
   }
 
   const DOMPurify = await loadDOMPurify()
+  // Unwrap unknown benign GitHub wrappers (e.g. <markdown-accessiblity-table>)
+  // while explicitly stripping executable/non-content tags and their payloads.
   el.innerHTML = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [...ALLOWED_ELEMENTS, '#text'],
     ALLOWED_ATTR: ALLOWED_ATTRIBUTES,
+    FORBID_TAGS,
+    FORBID_CONTENTS: FORBID_TAGS,
     ALLOW_ARIA_ATTR: false,
     ALLOW_DATA_ATTR: false,
-    KEEP_CONTENT: false
+    KEEP_CONTENT: true
   })
 }
 
@@ -97,6 +126,30 @@ function isSafeHttpUrl(rawUrl, baseUrl) {
   } catch {
     return null
   }
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function normalizeReadmeImageUrl(rawSrc, { owner, repo, rawBaseUrl }) {
+  const safeDirect = isSafeHttpUrl(rawSrc, rawBaseUrl)
+  if (!safeDirect) return null
+
+  // GitHub rendered HTML (application/vnd.github.html+json) emits root-relative
+  // /<owner>/<repo>/raw/<ref>/<path> URLs, which 404 if resolved against rawBaseUrl.
+  const ownerRepo = `${escapeRegExp(owner)}/${escapeRegExp(repo)}`
+  const githubRawMatch = rawSrc.match(
+    new RegExp(`^(?:https?:\\/\\/github\\.com)?\\/${ownerRepo}\\/raw\\/(.+)$`, 'i')
+  )
+  if (githubRawMatch) {
+    return isSafeHttpUrl(
+      `https://raw.githubusercontent.com/${owner}/${repo}/${githubRawMatch[1]}`,
+      rawBaseUrl
+    )
+  }
+
+  return safeDirect
 }
 
 /**
@@ -147,7 +200,7 @@ export function hydrateGitHubReadmeDom(
   // Normalize image URLs, dimensions, lazy loading, and graceful error fallback.
   for (const img of rootEl.querySelectorAll('img')) {
     const rawSrc = img.getAttribute('src')?.trim()
-    const safeSrc = rawSrc ? isSafeHttpUrl(rawSrc, rawBaseUrl) : null
+    const safeSrc = rawSrc ? normalizeReadmeImageUrl(rawSrc, { owner, repo, rawBaseUrl }) : null
 
     if (!safeSrc) {
       img.remove()
@@ -159,6 +212,10 @@ export function hydrateGitHubReadmeDom(
 
     if (rawWidth === '100%') {
       img.classList.add('gh-readme-fullwidth')
+    } else if (rawWidth && /^\d+(?:\.\d+)?%$/.test(rawWidth)) {
+      img.classList.add('gh-readme-pctwidth')
+      img.style.width = rawWidth
+      img.style.height = 'auto'
     }
 
     if (rawHeight === '3px' || rawHeight === '3') {
@@ -172,7 +229,10 @@ export function hydrateGitHubReadmeDom(
     }
 
     img.setAttribute('src', safeSrc)
-    img.loading = 'lazy'
+    // Eagerly load images inside tables so pre-layout SVG cells do not stall on mobile.
+    if (!img.closest('table')) {
+      img.loading = 'lazy'
+    }
     img.decoding = 'async'
     img.referrerPolicy = 'no-referrer'
 
@@ -216,6 +276,17 @@ export function hydrateGitHubReadmeDom(
         img.removeEventListener('error', handleError)
       })
     }
+  }
+
+  // Wrap standalone <table> nodes so wide tables scroll inside the card on mobile.
+  for (const table of rootEl.querySelectorAll('table')) {
+    if (table.closest('markdown-accessiblity-table, .gh-readme-table-wrap')) {
+      continue
+    }
+    const wrapper = document.createElement('div')
+    wrapper.className = 'gh-readme-table-wrap'
+    table.parentNode?.insertBefore(wrapper, table)
+    wrapper.appendChild(table)
   }
 
   return () => {

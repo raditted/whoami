@@ -578,11 +578,16 @@ progress.loading-spinner:indeterminate {
 }
 
 .gh-readme-body :deep(a:has(h1, h2, h3, h4, ul, div)),
-.gh-readme-body :deep(a:has(> img.gh-readme-fullwidth)) {
+.gh-readme-body :deep(a:has(> img.gh-readme-fullwidth)),
+.gh-readme-body :deep(a:has(> img.gh-readme-pctwidth)) {
   display: block;
   width: 100%;
   text-decoration: none;
   color: inherit;
+}
+
+.gh-readme-body :deep(a:has(> img.gh-readme-pctwidth)) {
+  text-align: center;
 }
 
 .gh-readme-body :deep(img) {
@@ -601,6 +606,60 @@ progress.loading-spinner:indeterminate {
   object-fit: cover;
   margin-block: 0.9rem;
   border-radius: 999px;
+}
+
+.gh-readme-body :deep(markdown-accessiblity-table),
+.gh-readme-body :deep(.gh-readme-table-wrap) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-block: 1rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-subtle) transparent;
+}
+
+.gh-readme-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.gh-readme-body :deep(th),
+.gh-readme-body :deep(td) {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.gh-readme-body :deep(th) {
+  font-weight: 600;
+  color: var(--color-ink);
+  background-color: var(--color-bg-band);
+}
+
+.gh-readme-body :deep(th[align="center"]),
+.gh-readme-body :deep(td[align="center"]) {
+  text-align: center;
+}
+
+.gh-readme-body :deep(th[align="right"]),
+.gh-readme-body :deep(td[align="right"]) {
+  text-align: right;
+}
+
+.gh-readme-body :deep(td > a > img),
+.gh-readme-body :deep(td > img) {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.gh-readme-body :deep(td br + a),
+.gh-readme-body :deep(td a + a),
+.gh-readme-body :deep(td img + img) {
+  margin-top: 0.35rem;
 }
 
 .gh-readme-body :deep(div[align="center"]) {
@@ -669,6 +728,17 @@ progress.loading-spinner:indeterminate {
   .gh-readme-body :deep(pre code) {
     font-size: clamp(0.7rem, 3.1vw, 0.75rem);
     line-height: 1.5;
+  }
+
+  .gh-readme-body :deep(markdown-accessiblity-table),
+  .gh-readme-body :deep(.gh-readme-table-wrap) {
+    margin-block: 0.75rem;
+  }
+
+  .gh-readme-body :deep(th),
+  .gh-readme-body :deep(td) {
+    padding: 0.45rem;
+    font-size: 0.85rem;
   }
 }
 </style>
